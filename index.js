@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 
 app.get('/add-user', async (req, res) => {
   try {
-    const result = await db.get('group_app', JSON.stringify({ name: 'Maher' }));
+    const result = await db.set('group_app', JSON.stringify({ name: 'Maher' }));
 
     res.status(200).json({ message: 'OK', result });
   } catch (error) {
