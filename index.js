@@ -43,7 +43,11 @@ app.post('/verify', async (req, res) => {
       // Set timeout to remove user after 2 minutes (120,000ms)
       setTimeout(async () => {
         try {
-          await bot.banChatMember('-1002415386979', userId);
+          await bot.unbanChatMember('-1002415386979', userId, {
+            only_if_banned: false,
+          });
+
+          // await bot.banChatMember('-1002415386979', userId);
           console.log(
             `❌ User ${userId} removed from the group after 2 minutes.`
           );
