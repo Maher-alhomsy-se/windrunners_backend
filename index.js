@@ -45,6 +45,13 @@ app.get('/', async (req, res) => {
 
 app.post('/verify', async (req, res) => {
   const { tx, userId, address } = req.body;
+
+  if (!tx || !userId || !address) {
+    return res
+      .status(500)
+      .json({ message: JSON.stringify({ tx, user, address }) });
+  }
+
   try {
     const transaction = await provider.getTransaction(tx.hash);
     const etherValue = formatEther(transaction.value);
