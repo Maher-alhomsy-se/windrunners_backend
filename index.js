@@ -62,7 +62,8 @@ app.post('/verify', async (req, res) => {
     db.set(key, JSON.stringify(data));
 
     if (etherValue === '0.001805') {
-      bot.approveChatJoinRequest(GROUP_ID, userId);
+      const isApproved = await bot.approveChatJoinRequest(GROUP_ID, userId);
+      console.log(isApproved);
     }
 
     return res
