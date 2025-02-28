@@ -3,7 +3,6 @@ import express from 'express';
 import cors from 'cors';
 import Redis from 'ioredis';
 import { ethers, formatEther } from 'ethers';
-
 import TelegramBot from 'node-telegram-bot-api';
 
 const bot = new TelegramBot('7992828654:AAGCEaVx1OxZA6Em79ow9P1gP0KE0SB7Mnw', {
@@ -24,19 +23,6 @@ const URL =
 const provider = new ethers.JsonRpcProvider(URL);
 
 app.get('/', async (req, res) => {
-  const blockNumber = await provider.getBlockNumber();
-
-  console.log('Block number: ' + blockNumber);
-
-  const hash =
-    '0x5754a2ddf5085c85393cbf1395db251e97b2ea1f7d28515710c4777abb233e80';
-
-  const transaction = await provider.getTransaction(hash);
-
-  console.log(transaction);
-
-  console.log(Date.now());
-
   res.status(200).json({ message: 'Hello from express! ' });
 });
 
@@ -53,6 +39,18 @@ app.post('/verify', async (req, res) => {
 
     if (etherValue === '0.001805') {
       bot.approveChatJoinRequest('-1002415386979', userId);
+
+      // Set timeout to remove user after 2 minutes (120,000ms)
+      setTimeout(async () => {
+        try {
+          await bot.banChatMember('-1002415386979', userId);
+          console.log(
+            `❌ User ${userId} removed from the group after 2 minutes.`
+          );
+        } catch (err) {
+          console.error(`Failed to remove user ${userId}:`, err);
+        }
+      }, 120000);
     }
 
     return res
