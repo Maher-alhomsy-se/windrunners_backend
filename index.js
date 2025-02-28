@@ -2,7 +2,13 @@ import express from 'express';
 
 import cors from 'cors';
 import Redis from 'ioredis';
-import { ethers } from 'ethers';
+import { ethers, formatEther } from 'ethers';
+
+import TelegramBot from 'node-telegram-bot-api';
+
+const bot = new TelegramBot('7992828654:AAGCEaVx1OxZA6Em79ow9P1gP0KE0SB7Mnw', {
+  polling: true,
+});
 
 const db = new Redis(
   'rediss://default:AcNDAAIjcDE5ZDM1OGE1YjEyYjc0YWZiODllYmRmNGI5OTM3ZWZhMnAxMA@honest-snail-49987.upstash.io:6379'
@@ -22,17 +28,36 @@ app.get('/', async (req, res) => {
 
   console.log('Block number: ' + blockNumber);
 
+  const hash =
+    '0x5754a2ddf5085c85393cbf1395db251e97b2ea1f7d28515710c4777abb233e80';
+
+  const transaction = await provider.getTransaction(hash);
+
+  console.log(transaction);
+
+  console.log(Date.now());
+
   res.status(200).json({ message: 'Hello from express! ' });
 });
 
 app.post('/verify', async (req, res) => {
-  const { tx } = req.body;
+  const { tx, userId, address } = req.body;
   try {
     const transaction = await provider.getTransaction(tx.hash);
+    const etherValue = formatEther(transaction.value);
+
+    const key = `group:${address}`;
+    const data = { etherValue, address, date: Date.now() };
+
+    db.set(key, JSON.stringify(data));
+
+    if (etherValue === '0.001805') {
+      bot.approveChatJoinRequest('-1002415386979', userId);
+    }
 
     return res
       .status(200)
-      .json({ message: 'Success!', data: JSON.stringify(transaction) });
+      .json({ message: 'Success!', data: JSON.stringify(transaction), userId });
   } catch (error) {
     return res.status(500).json({ message: 'Internal Server Error !' });
   }
