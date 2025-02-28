@@ -54,11 +54,11 @@ app.post('/verify', async (req, res) => {
 });
 
 setInterval(async () => {
-  const users = await db.keys('group:*');
+  const users = await db.keys('group:*:app');
 
   for (const key of users) {
     const address = key.split(':')[1];
-    const data = await db.get(`group:${address}`);
+    const data = await db.get(`group:${address}:app`);
 
     const parsedData = JSON.parse(data);
     const expireTime = parsedData.date;
@@ -66,14 +66,14 @@ setInterval(async () => {
     if (expireTime && Date.now() >= expireTime) {
       try {
         await bot.unbanChatMember(GROUP_ID, userId, { only_if_banned: false });
-        await db.del(`group:${address}`);
+        await db.del(`group:${address}:app`);
         console.log(`❌ User ${address} removed from the group after 1 month.`);
       } catch (err) {
         console.error(`Failed to remove user ${address}:`, err);
       }
     }
   }
-}, 5000);
+}, 60 * 60 * 1000);
 
 export default app;
 
