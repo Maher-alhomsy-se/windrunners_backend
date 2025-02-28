@@ -67,9 +67,9 @@ setInterval(async () => {
       try {
         await bot.unbanChatMember(GROUP_ID, userId, { only_if_banned: false });
         await db.del(`group:${address}`);
-        console.log(`❌ User ${userId} removed from the group after 1 month.`);
+        console.log(`❌ User ${address} removed from the group after 1 month.`);
       } catch (err) {
-        console.error(`Failed to remove user ${userId}:`, err);
+        console.error(`Failed to remove user ${address}:`, err);
       }
     }
   }
