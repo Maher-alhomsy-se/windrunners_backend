@@ -14,17 +14,18 @@ const db = new Redis(
 );
 
 const app = express();
-app.use(express.json());
+
 app.use(cors());
+app.use(express.json());
 
 const URL =
   'https://base-mainnet.infura.io/v3/76d6ec90a58e4984adea4d341e6b8de7';
 
 const provider = new ethers.JsonRpcProvider(URL);
 
-app.get('/', async (req, res) => {
-  res.status(200).json({ message: 'Hello from express! ' });
-});
+const GROUP_ID = '-1002415386979';
+const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;
+const ADDRESS = '0xa8ed9b14658Bb9ea3e9CC1e32BA08fcbe6888927';
 
 app.post('/verify', async (req, res) => {
   const { tx, userId, address } = req.body;
@@ -32,29 +33,16 @@ app.post('/verify', async (req, res) => {
     const transaction = await provider.getTransaction(tx.hash);
     const etherValue = formatEther(transaction.value);
 
-    const key = `group:${address}`;
-    const data = { etherValue, address, date: Date.now() };
+    const key = `group:${address}:app`;
+    const data = { etherValue, address, date: Date.now() + ONE_MONTH_MS };
 
     db.set(key, JSON.stringify(data));
 
-    if (etherValue === '0.001805') {
-      bot.approveChatJoinRequest('-1002415386979', userId);
-
-      // Set timeout to remove user after 2 minutes (120,000ms)
-      setTimeout(async () => {
-        try {
-          await bot.unbanChatMember('-1002415386979', userId, {
-            only_if_banned: false,
-          });
-
-          // await bot.banChatMember('-1002415386979', userId);
-          console.log(
-            `❌ User ${userId} removed from the group after 2 minutes.`
-          );
-        } catch (err) {
-          console.error(`Failed to remove user ${userId}:`, err);
-        }
-      }, 120000);
+    if (
+      etherValue === '0.001805' &&
+      transaction.to.toLocaleLowerCase() === ADDRESS.toLocaleLowerCase()
+    ) {
+      bot.approveChatJoinRequest(GROUP_ID, userId);
     }
 
     return res
@@ -64,6 +52,28 @@ app.post('/verify', async (req, res) => {
     return res.status(500).json({ message: 'Internal Server Error !' });
   }
 });
+
+setInterval(async () => {
+  const users = await db.keys('group:*');
+
+  for (const key of users) {
+    const address = key.split(':')[1];
+    const data = await db.get(`group:${address}`);
+
+    const parsedData = JSON.parse(data);
+    const expireTime = parsedData.date;
+
+    if (expireTime && Date.now() >= expireTime) {
+      try {
+        await bot.unbanChatMember(GROUP_ID, userId, { only_if_banned: false });
+        await db.del(`group:${address}`);
+        console.log(`❌ User ${userId} removed from the group after 1 month.`);
+      } catch (err) {
+        console.error(`Failed to remove user ${userId}:`, err);
+      }
+    }
+  }
+}, 5000);
 
 export default app;
 
