@@ -39,7 +39,7 @@ app.post('/verify', async (req, res) => {
     const key = `group:${address}:app`;
     const data = { etherValue, address, date: Date.now() + ONE_MONTH_MS };
 
-    if (etherValue === '0.001805') {
+    if (etherValue === '0.005415') {
       db.set(key, JSON.stringify(data));
 
       const inviteLink = await bot.createChatInviteLink(CHANNEL_ID, {
