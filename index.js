@@ -66,6 +66,8 @@ app.post('/verify', async (req, res) => {
 });
 
 bot.on('text', async ({ text, chat }) => {
+  console.log(text);
+
   if (text === '/help') {
     bot.sendMessage(
       chat.id,
@@ -96,7 +98,10 @@ bot.on('text', async ({ text, chat }) => {
 
 app.post('/set-commands', async (req, res) => {
   try {
-    const commands = [{ command: 'help', description: 'Get help' }];
+    const commands = [
+      { command: 'start', description: 'Start' },
+      { command: 'help', description: 'Get help' },
+    ];
 
     await bot.setMyCommands(commands);
 
