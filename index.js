@@ -7,6 +7,7 @@ import TelegramBot from 'node-telegram-bot-api';
 
 const CHANNEL_ID = '-1002282561796';
 const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;
+const WEBHOOK_URL = 'https://group-app-backend.vercel.app';
 
 const URL =
   'https://base-mainnet.infura.io/v3/76d6ec90a58e4984adea4d341e6b8de7';
@@ -22,7 +23,9 @@ app.use(express.json());
 
 const db = new Redis(DB_URL);
 const provider = new ethers.JsonRpcProvider(URL);
-const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+const bot = new TelegramBot(BOT_TOKEN, { webHook: true });
+
+bot.setWebHook(`${WEBHOOK_URL}/bot${BOT_TOKEN}`);
 
 app.post('/verify', async (req, res) => {
   const { tx, userId, address } = req.body;
@@ -38,7 +41,12 @@ app.post('/verify', async (req, res) => {
     const etherValue = formatEther(transaction.value);
 
     const key = `group:${address}:app`;
-    const data = { etherValue, address, date: Date.now() + ONE_MONTH_MS };
+    const data = {
+      userId,
+      address,
+      etherValue,
+      date: Date.now() + ONE_MONTH_MS,
+    };
 
     if (etherValue === '0.005415') {
       db.set(key, JSON.stringify(data));
@@ -63,6 +71,11 @@ app.post('/verify', async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error?.message || error });
   }
+});
+
+app.post(`/bot${BOT_TOKEN}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
 });
 
 bot.on('text', async ({ text, chat }) => {
@@ -124,7 +137,7 @@ setInterval(async () => {
 
     if (expireTime && Date.now() >= expireTime) {
       try {
-        await bot.unbanChatMember(CHANNEL_ID, userId, {
+        await bot.unbanChatMember(CHANNEL_ID, parsedData.userId, {
           only_if_banned: false,
         });
         await db.del(`group:${address}:app`);
@@ -137,7 +150,3 @@ setInterval(async () => {
 }, 60 * 60 * 1000);
 
 export default app;
-
-app.listen(8080, () => {
-  console.log('Running : 8080');
-});
