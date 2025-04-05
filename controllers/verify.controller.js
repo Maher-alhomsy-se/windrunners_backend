@@ -1,7 +1,7 @@
 import { ethers, formatEther } from 'ethers';
 
-import db from '../lib/db';
-import bot from '../lib/bot';
+import db from '../lib/db.js';
+import bot from '../lib/bot.js';
 
 const CHANNEL_ID = '-1002282561796';
 const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;

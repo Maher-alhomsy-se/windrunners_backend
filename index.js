@@ -2,10 +2,10 @@ import express from 'express';
 
 import cors from 'cors';
 
-import db from './lib/db';
-import bot from './lib/bot';
-import { verify } from './controllers/verify.controller';
-import { addCommands } from './controllers/add-commands.controller';
+import db from './lib/db.js';
+import bot from './lib/bot.js';
+import { verify } from './controllers/verify.controller.js';
+import { addCommands } from './controllers/add-commands.controller.js';
 
 const CHANNEL_ID = '-1002282561796';
 const WEBHOOK_URL = 'https://group-app-backend.vercel.app';

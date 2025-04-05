@@ -1,4 +1,4 @@
-import bot from '../lib/bot';
+import bot from '../lib/bot.js';
 
 export async function addCommands(req, res) {
   try {
