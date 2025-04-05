@@ -2,12 +2,11 @@ import express from 'express';
 
 import cors from 'cors';
 
-import db from './lib/db.js';
 import bot from './lib/bot.js';
 import { verify } from './controllers/verify.controller.js';
+import { cleanup } from './controllers/cleanup.controller.js';
 import { addCommands } from './controllers/add-commands.controller.js';
 
-const CHANNEL_ID = '-1002282561796';
 const WEBHOOK_URL = 'https://group-app-backend.vercel.app';
 const BOT_TOKEN = '7856924356:AAEpDIvpy1ScASAb0xeIfr-9WwNALA7sJ8s';
 
@@ -19,6 +18,7 @@ app.use(express.json());
 bot.setWebHook(`${WEBHOOK_URL}/bot${BOT_TOKEN}`);
 
 app.post('/verify', verify);
+app.get('/cleanup', cleanup);
 app.post('/set-commands', addCommands);
 
 app.post(`/bot${BOT_TOKEN}`, (req, res) => {
@@ -55,36 +55,6 @@ bot.on('text', async ({ text, chat }) => {
       }
     );
   }
-});
-
-setInterval(async () => {
-  const users = await db.keys('group:*:app');
-
-  for (const key of users) {
-    const address = key.split(':')[1];
-    const data = await db.get(`group:${address}:app`);
-
-    const parsedData = JSON.parse(data);
-    const expireTime = parsedData.date;
-
-    if (expireTime && Date.now() >= expireTime) {
-      try {
-        await bot.unbanChatMember(CHANNEL_ID, parsedData.userId, {
-          only_if_banned: false,
-        });
-        await db.del(`group:${address}:app`);
-        console.log(`❌ User ${address} removed from the group after 1 month.`);
-      } catch (err) {
-        console.error(`Failed to remove user ${address}:`, err);
-      }
-    }
-  }
-}, 60 * 60 * 1000);
-
-app.get('/cleanup', (req, res) => {
-  console.log('Clean up');
-
-  res.status(200).json({ message: 'CleanUp' });
 });
 
 export default app;
