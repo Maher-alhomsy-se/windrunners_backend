@@ -5,6 +5,7 @@ export async function addCommands(req, res) {
     const commands = [
       { command: 'start', description: 'Start' },
       { command: 'help', description: 'Get help' },
+      { command: 'pay', description: 'Pay by WHISH' },
     ];
 
     await bot.setMyCommands(commands);
