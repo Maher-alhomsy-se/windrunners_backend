@@ -7,7 +7,7 @@ import { verify } from './controllers/verify.controller.js';
 import { cleanup } from './controllers/cleanup.controller.js';
 import { addCommands } from './controllers/add-commands.controller.js';
 
-const WEBHOOK_URL = 'https://group-app-backend.vercel.app';
+const WEBHOOK_URL = 'https://windrunnersbackend.onrender.com';
 const BOT_TOKEN = '7856924356:AAEpDIvpy1ScASAb0xeIfr-9WwNALA7sJ8s';
 
 const PORT = process.env.PORT || 3000;
