@@ -7,24 +7,25 @@ import { verify } from './controllers/verify.controller.js';
 import { cleanup } from './controllers/cleanup.controller.js';
 import { addCommands } from './controllers/add-commands.controller.js';
 
-const WEBHOOK_URL = 'https://group-app-backend.vercel.app';
-const BOT_TOKEN = '7856924356:AAEpDIvpy1ScASAb0xeIfr-9WwNALA7sJ8s';
+// const WEBHOOK_URL = 'https://group-app-backend.vercel.app';
+// const BOT_TOKEN = '7856924356:AAEpDIvpy1ScASAb0xeIfr-9WwNALA7sJ8s';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-bot.setWebHook(`${WEBHOOK_URL}/bot${BOT_TOKEN}`);
+// bot.setWebHook(`${WEBHOOK_URL}/bot${BOT_TOKEN}`);
+bot.startPolling();
 
 app.post('/verify', verify);
 app.get('/cleanup', cleanup);
 app.post('/set-commands', addCommands);
 
-app.post(`/bot${BOT_TOKEN}`, (req, res) => {
-  bot.processUpdate(req.body);
-  res.sendStatus(200);
-});
+// app.post(`/bot${BOT_TOKEN}`, (req, res) => {
+//   bot.processUpdate(req.body);
+//   res.sendStatus(200);
+// });
 
 bot.on('text', async ({ text, chat }) => {
   console.log(text);
