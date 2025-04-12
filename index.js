@@ -27,6 +27,10 @@ app.post('/set-commands', addCommands);
 //   res.sendStatus(200);
 // });
 
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Hello server' });
+});
+
 bot.on('text', async ({ text, chat }) => {
   console.log(text);
 
