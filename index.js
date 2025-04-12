@@ -61,7 +61,7 @@ bot.on('text', async ({ text, chat }) => {
       `💳 **Payment Instructions (WHISH)**\n\n` +
       `To get access to the private channel, please send ** $15 ** via the WHISH app to the following number: \n\n` +
       `📱 \`70224984\` \n\n` +
-      `After sending the payment, please message me on Telegram with a screenshot so I can verify and give you access.Thank you! 🙏`;
+      `After sending the payment, please message @zksnarks on Telegram with a screenshot so I can verify and give you access.Thank you! 🙏`;
 
     bot.sendMessage(chat.id, message, { parse_mode: 'Markdown' });
   }
