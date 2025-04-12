@@ -10,6 +10,8 @@ import { addCommands } from './controllers/add-commands.controller.js';
 // const WEBHOOK_URL = 'https://group-app-backend.vercel.app';
 // const BOT_TOKEN = '7856924356:AAEpDIvpy1ScASAb0xeIfr-9WwNALA7sJ8s';
 
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 
 app.use(cors());
@@ -72,8 +74,8 @@ bot.on('text', async ({ text, chat }) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log(`Server is running on port 3000`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 export default app;
