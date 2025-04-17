@@ -31,7 +31,7 @@ export async function verify(req, res) {
       date: Date.now() + ONE_MONTH_MS,
     };
 
-    if (transaction.value === 9400000000000000n) {
+    if (transaction.value === 10000000000000000n) {
       db.set(key, JSON.stringify(data));
 
       const inviteLink = await bot.createChatInviteLink(CHANNEL_ID, {
