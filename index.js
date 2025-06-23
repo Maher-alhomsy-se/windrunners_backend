@@ -1,6 +1,7 @@
 import express from 'express';
 
 import cors from 'cors';
+import dotenv from 'dotenv';
 
 import bot from './lib/bot.js';
 import { verify } from './controllers/verify.controller.js';
@@ -12,6 +13,7 @@ const BOT_TOKEN = '7856924356:AAEpDIvpy1ScASAb0xeIfr-9WwNALA7sJ8s';
 
 const PORT = process.env.PORT || 3000;
 
+dotenv.config();
 const app = express();
 
 app.use(cors());
